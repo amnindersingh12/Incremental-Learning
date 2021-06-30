@@ -8,6 +8,9 @@ Following are the Steps to run this locally
 
 # Usage
 - Input should be given like this 
+
+- Features:- department,region,education,gender,recruitment_channel,no_of_trainings,age,previous_year_rating,length_of_service,awards_won?,avg_training_score
+
 ***"Sales & Marketing,region_7,Master's & above,f,sourcing,1,35,5,8,0,49"***
 
 Output: 
