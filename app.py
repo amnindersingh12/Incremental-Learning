@@ -158,13 +158,6 @@ def main():
 			with st.beta_expander("DEP_4 Probability"):
 				st.altair_chart(c_DEP_4,use_container_width=True)
 
-	
-		
-
-
-
-
-
 if __name__ == '__main__':
 	main()
 
