@@ -84,7 +84,8 @@ def main():
 			col1,col2 = st.beta_columns([2,1])
 			with col1:
 				with st.beta_container():
-					st.write("Features:- department,region,education,gender,recruitment_channel,no_of_trainings,age,previous_year_rating,")
+					st.write("Features:- department,region,education,gender,recruitment_channel,")
+					st.write("no_of_trainings,age,previous_year_rating,")
 					st.write("length_of_service,awards_won?,avg_training_score")
 				message = st.text_area("message",value=value)
 				submit_message = st.form_submit_button(label='Predict')
