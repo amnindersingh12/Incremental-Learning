@@ -72,7 +72,7 @@ def view_all_data():
 
 
 # main function
-
+value="Sales & Marketing,region_7,Master's & above,f,sourcing,1,35,5,8,0,49"
 def main():
 	menu = ["Home","Manage"]
 	create_table()
@@ -86,7 +86,7 @@ def main():
 				with st.beta_container():
 					st.write("Features:- department,region,education,gender,recruitment_channel,no_of_trainings,age,previous_year_rating,")
 					st.write("length_of_service,awards_won?,avg_training_score")
-				message = st.text_area("message")
+				message = st.text_area("message",value=value)
 				submit_message = st.form_submit_button(label='Predict')
 
 			with col2:
