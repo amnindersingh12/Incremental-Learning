@@ -1,14 +1,14 @@
-# Core packages
+# Core Pkgs
 import streamlit as st 
 import pandas as pd 
 import matplotlib.pyplot as plt 
 import matplotlib
-
+matplotlib.use('Agg')
 import seaborn as sns 
 import altair as alt
 from datetime import datetime
 
-# Online ML packages
+# Online ML Pkgs
 from river.naive_bayes import MultinomialNB
 from river.feature_extraction import BagOfWords,TFIDF
 from river.compose import Pipeline
@@ -58,11 +58,11 @@ c = conn.cursor()
 # department,region,education,gender,recruitment_channel,no_of_trainings,age,previous_year_rating,length_of_service,KPIs_met >80%,awards_won?,avg_training_score,is_promoted
 # SQL STUFF
 def create_table():
-	c.execute('CREATE TABLE IF NOT EXISTS predictionTable(input TEXT,prediction TEXT,probability NUMBER,DEP_1 NUMBER,DEP_2 NUMBER,DEP_3 NUMBER,DEP_4 NUMBER,postdate DATE)')
+	c.execute('CREATE TABLE IF NOT EXISTS predictionTable(message TEXT,prediction TEXT,probability NUMBER,DEP_1 NUMBER,DEP_2 NUMBER,DEP_3 NUMBER,DEP_4 NUMBER,postdate DATE)')
 
 
-def add_data(input,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate):
-    c.execute('INSERT INTO predictionTable(input,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate) VALUES (?,?,?,?,?,?,?,?)',(input,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate))
+def add_data(message,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate):
+    c.execute('INSERT INTO predictionTable(message,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate) VALUES (?,?,?,?,?,?,?,?)',(message,prediction,probability,DEP_1,DEP_2,DEP_3,DEP_4,postdate))
     conn.commit()
 
 def view_all_data():
@@ -86,20 +86,20 @@ def main():
 				with st.beta_container():
 					st.write("Features:- department,region,education,gender,recruitment_channel,no_of_trainings,age,previous_year_rating,")
 					st.write("length_of_service,awards_won?,avg_training_score")
-				input = st.text_area("input")
-				submit_input = st.form_submit_button(label='Predict')
+				message = st.text_area("message")
+				submit_message = st.form_submit_button(label='Predict')
 
 			with col2:
 				st.write("Using River")
 				st.write("Predict as DEP_1, DEP_2, DEP_3, DEP_4")
 
-		if submit_input:
-			prediction = model.predict_one(input)
-			prediction_proba = model.predict_proba_one(input)	
+		if submit_message:
+			prediction = model.predict_one(message)
+			prediction_proba = model.predict_proba_one(message)	
 			probability = max(prediction_proba.values())
 			postdate = datetime.now()
 			# Add Data To Database
-			add_data(input,prediction,probability,prediction_proba['DEP_1'],prediction_proba['DEP_2']
+			add_data(message,prediction,probability,prediction_proba['DEP_1'],prediction_proba['DEP_2']
 			,prediction_proba['DEP_3'],prediction_proba['DEP_4'],postdate)
 			st.success("Data Submitted")
 
@@ -107,7 +107,7 @@ def main():
 			res_col1 ,res_col2 = st.beta_columns(2)
 			with res_col1:
 				st.info("Original Text")
-				st.write(input)
+				st.write(message)
 
 				st.success("Prediction")
 				st.write(prediction)
@@ -128,13 +128,13 @@ def main():
 
 
 	elif choice == "Manage":
-		st.subheader("Manage & Monitor Results")
+		st.subheader("Manage")
 		stored_data =  view_all_data() 
-		new_df = pd.DataFrame(stored_data,columns=['input','prediction','probability','DEP_1','DEP_2','DEP_3','DEP_4','postdate'])
+		new_df = pd.DataFrame(stored_data,columns=['message','prediction','probability','DEP_1','DEP_2','DEP_3','DEP_4','postdate'])
 		st.dataframe(new_df)
 		new_df['postdate'] = pd.to_datetime(new_df['postdate'])
 
-		# c = alt.Chart(new_df).mark_line().encode(x='minutes(postdate)',y='probability')# For Minutes
+		
 		c = alt.Chart(new_df).mark_line().encode(x='postdate',y='probability')
 		st.altair_chart(c)
 
@@ -142,25 +142,7 @@ def main():
 		c_DEP_2 = alt.Chart(new_df['DEP_2'].reset_index()).mark_line().encode(x='DEP_2',y='index')
 		c_DEP_3 = alt.Chart(new_df['DEP_3'].reset_index()).mark_line().encode(x='DEP_3',y='index')
 		c_DEP_4 = alt.Chart(new_df['DEP_4'].reset_index()).mark_line().encode(x='DEP_4',y='index')
-		# c_hardware_proba = alt.Chart(new_df['hardware_proba'].reset_index()).mark_line().encode(x='hardware_proba',y='index')
 		
-		
-
-		# c1,c2 = st.beta_columns(2)
-		# with c1:
-		# 	with st.beta_expander("Software Probability"):
-		# 		st.altair_chart(c_DEP_4,use_container_width=True)
-
-		# with c2:
-		# 	with st.beta_expander("Hardware Probability"):
-		# 		st.altair_chart(c_hardware_proba,use_container_width=True)
-
-
-		# with st.beta_expander("Prediction Distribution"):
-		# 	fig2 = plt.figure()
-		# 	sns.countplot(x='probability',data=new_df)
-		# 	st.pyplot(fig2)
-
 		c1,c2,c3,c4 = st.beta_columns(4)
 		with c1:
 			with st.beta_expander("DEP_1 Probability"):
@@ -176,10 +158,7 @@ def main():
 			with st.beta_expander("DEP_4 Probability"):
 				st.altair_chart(c_DEP_4,use_container_width=True)
 
-		# with st.beta_expander("Prediction Distribution"):
-		# 	fig2 = plt.figure()
-		# 	sns.countplot(x='probability',data=new_df)
-		# 	st.pyplot(fig2)
+	
 		
 
 
